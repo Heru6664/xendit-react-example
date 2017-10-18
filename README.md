@@ -2,11 +2,16 @@
 
 ## Getting started
 
-```
-npm install --save xendit-js-node
-```
+### Android
 
-### Example
+* Get into the project folder `cd client`
 
-Detail on how to use this plugin, can be seen on this 
-[react-native example app](https://github.com/xendit/xendit-react-example)
+* Run the packager `npm start`
+
+* Build `react-native run-android`
+
+### iOS
+
+for iOS, you need to use XCODE.
+
+please refer here: https://facebook.github.io/react-native/docs/getting-started.html
