@@ -6,6 +6,8 @@
 
 * Get into the project folder `cd client`
 
+* Install all the dependencies `npm install`
+
 * Run the packager `npm start`
 
 * Build `react-native run-android`
