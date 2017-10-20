@@ -5,19 +5,33 @@ import {
     KeyboardAvoidingView,
     Text,
     TextInput,
-    CheckBox,
     WebView,
     Modal,
     Image
 } from 'react-native';
+import CheckBox from 'react-native-check-box';
 import Dimensions from 'Dimensions';
-import Xendit from 'xendit-js-node'
+import Xendit from 'xendit-js-node';
 
-import { Button } from '../components/Button'
-import { Spinner } from '../components/Spinner'
+import { Button } from '../components/Button';
+import { Spinner } from '../components/Spinner';
 
 const {height, width} = Dimensions.get('window');
 const EX_API_KEY = 'xnd_public_development_OIiDfOQh1eCqkZNhKrobEzbCMtKjodl6k3Lk+R1r/GPe/7OgCQRyjw==';
+
+const patchPostMessageFunction = function() {
+    var originalPostMessage = window.postMessage;
+    var patchedPostMessage = function(message, targetOrigin, transfer) {
+        originalPostMessage(message, targetOrigin, transfer);
+    };
+    patchedPostMessage.toString = function() {
+      return String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage');
+    };
+
+    window.postMessage = patchedPostMessage;
+};
+
+const injectScript = '(' + String(patchPostMessageFunction) + ')();';
 
 class CardMain extends Component {
     constructor (props) {
@@ -196,13 +210,13 @@ class CardMain extends Component {
 
                     <View style={{ flexDirection: 'row', justifyContent: "center" }}>
                         <CheckBox
-                            value={ this.state.is_multiple_use }
-                            onValueChange={ (e) => this.setState({ is_multiple_use: e }) }
+                            isChecked={ this.state.is_multiple_use }
+                            onClick={ () => this.setState({ is_multiple_use: !this.state.is_multiple_use }) }
                             style={{ right: 65 }}
                         />
                         <CheckBox
-                            value={ this.state.should_authenticate === true ? false : true }
-                            onValueChange={ (e) => this.setState({ should_authenticate: !e }) }
+                            isChecked={ this.state.should_authenticate === true ? false : true }
+                            onClick={ () => this.setState({ should_authenticate: !this.state.should_authenticate }) }
                             style={{ left: 20 }}
                         />
                     </View>
@@ -321,8 +335,8 @@ class CardMain extends Component {
                     Enable Meta
                 </Text>
                 <CheckBox
-                    value={ this.state.should_use_meta }
-                    onValueChange={ (e) => this.setState({ should_use_meta: e }) }
+                    isChecked={ this.state.should_use_meta }
+                    onClick={ () => this.setState({ should_use_meta: !this.state.should_use_meta }) }
                 />
             </View>
         );
@@ -356,6 +370,7 @@ class CardMain extends Component {
 
                 <View style={ cardDetailsContainer2 }>
                     <WebView
+                        injectedJavaScript={injectScript}
                         source={{ uri: this.state.source }}
                         ref={( webView ) => this.webView = webView}
                         onMessage={ this.onMessage.bind(this) }
